@@ -1,41 +1,8 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: aperez-b <marvin@42.fr>                    +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2021/07/07 10:28:33 by aperez-b          #+#    #+#              #
-#    Updated: 2021/12/15 19:46:05 by aperez-b         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
-
-
-SHELL=/bin/bash
-UNAME = $(shell uname -s)
-PRINTF = echo
-ifeq ($(UNAME), Linux)
-	PRINTF = echo -e
-endif
-
-# Make variables
-PRINTF = LC_NUMERIC="en_US.UTF-8" printf
-CC = gcc -MD
-CFLAGS = -Wall -Wextra -Werror
-AR = ar rcs
-RM = rm -f
-HEADER = libft.h
-SRC_DIR = src
-SRCB_DIR = srcb
-SRCA_DIR = srca
-OBJ_DIR = obj
-OBJB_DIR = objb
-OBJA_DIR = obja
-BIN_DIR = bin
-BIN = libft.a
-NAME = $(BIN_DIR)/$(BIN)
-
-SRC =	ft_atoi.c ft_bzero.c	\
+NAME		= libft.a
+CC			= gcc -MD
+FLAGS		= -Wall -Wextra -Werror
+INC			= ./inc/libft.h
+SRCS		= ft_atoi.c ft_bzero.c	\
 	ft_calloc.c ft_putendl_fd.c		\
 	ft_itoa.c ft_putchar_fd.c		\
 	ft_putstr_fd.c ft_memccpy.c		\
@@ -51,20 +18,18 @@ SRC =	ft_atoi.c ft_bzero.c	\
 	ft_strncmp.c ft_strnstr.c		\
 	ft_strrchr.c ft_strtrim.c		\
 	ft_substr.c ft_tolower.c		\
-	ft_toupper.c ft_putnbr_fd.c
-
-SRCB = ft_lstadd_back.c	\
+	ft_toupper.c ft_putnbr_fd.c \
+	ft_lstadd_back.c	\
 	ft_lstadd_front.c	\
-	ft_lstclear.c		\
-	ft_lstdelone.c		\
-	ft_lstiter.c		\
-	ft_lstlast.c		\
-	ft_lstsize.c		\
-	ft_lstnew.c			\
-	ft_lstmap.c			\
-	ft_lstget_at.c
-
-SRCA = ft_putnbr_base_fd.c ft_putstrn_fd.c		\
+	ft_lstclear.c	\
+	ft_lstdelone.c	\
+	ft_lstiter.c	\
+	ft_lstlast.c	\
+	ft_lstsize.c	\
+	ft_lstnew.c	\
+	ft_lstmap.c	\
+	ft_lstget_at.c \
+	ft_putnbr_base_fd.c ft_putstrn_fd.c		\
 	ft_putnchar_fd.c ft_isspace.c ft_uitoa.c	\
 	ft_nbrlen.c ft_strrncmp.c ft_countchar.c	\
 	ft_strenlarge.c ft_recursive_power.c		\
@@ -75,60 +40,29 @@ SRCA = ft_putnbr_base_fd.c ft_putstrn_fd.c		\
 	ft_matrixlen.c ft_strchars_i.c				\
 	ft_between_chars.c ft_subsplit.c			\
 	ft_extend_matrix.c ft_matrixtolst.c			\
-	ft_lsttomatrix.c ft_matrix_replace_in.c
+ 	ft_lsttomatrix.c ft_matrix_replace_in.c
 
-OBJ = $(addprefix $(OBJ_DIR)/, $(SRC:.c=.o))
+OBJ_NAME	= $(SRCS:.c=.o)
+OBJ			= $(addprefix $(OBJ_DIR),$(OBJ_NAME))
+SRC_DIR 	= src/
+OBJ_DIR 	= obj/
+LIBC		= ar rcs
+RM			= rm -f
 
-OBJB = $(addprefix $(OBJB_DIR)/, $(SRCB:.c=.o))
+all:		$(NAME)
 
-OBJA = $(addprefix $(OBJA_DIR)/, $(SRCA:.c=.o))
+$(NAME):	$(OBJ) $(INC)
+	$(LIBC) ${NAME} ${OBJ}
 
-
-all: $(NAME)
-
-$(NAME): create_dirs $(OBJ) bonus additional
-	@$(PRINTF) "$(BIN) is up to date!\n"
-
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	@$(PRINTF) "Compiling $<..."
-	@$(CC) $(CFLAGS) -c $< -o $@
-
-bonus: create_dirs $(OBJ) $(OBJB)
-	@$(AR) $(NAME) $(OBJ) $(OBJB)
-
-$(OBJB_DIR)/%.o: $(SRCB_DIR)/%.c
-	@$(PRINTF) "Compiling $<$..."
-	@$(CC) $(CFLAGS) -c $< -o $@
-
-additional: create_dirs $(OBJA)
-	@$(AR) $(NAME) $(OBJA)
-
-$(OBJA_DIR)/%.o: $(SRCA_DIR)/%.c
-	@$(PRINTF) "Compiling $<..."
-	@$(CC) $(CFLAGS) -c $< -o $@
-
+$(OBJ_DIR)%.o:	$(SRC_DIR)%.c
+	mkdir -p $(OBJ_DIR)
+	$(CC) $(FLAGS) -o $@ -c $< -I $(INC)
 clean:
-	@$(PRINTF) "Cleaning up object files in libft...\n"
-	@$(RM) -r $(OBJ_DIR)
-	@$(RM) -r $(OBJB_DIR)
-	@$(RM) -r $(OBJA_DIR)
+	$(RM) $(OBJ)
 
-fclean: clean
-	@$(RM) -r $(BIN_DIR)
-	@$(PRINTF) "$(CYAN)Removed $(NAME)\n"
+fclean:		clean
+	$(RM) $(NAME)
 
-create_dirs:
-	@mkdir -p $(OBJ_DIR)
-	@mkdir -p $(OBJB_DIR)
-	@mkdir -p $(OBJA_DIR)
-	@mkdir -p $(BIN_DIR)
+re:			fclean all
 
-
-re: fclean
-	@make all
-
--include $(OBJ_DIR)/*.d
--include $(OBJB_DIR)/*.d
--include $(OBJA_DIR)/*.d
-
-.PHONY: all bonus additional clean fclean create_dirs re 
+.PHONY:		all clean fclean re

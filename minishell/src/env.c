@@ -101,6 +101,8 @@ int	mini_export(t_prompt *prompt)
 			ij[0]++;
 		}
 	}
+	else
+		ft_putmatrix_fd(prompt->envp, 1);
 	return (0);
 }
 
